@@ -1,4 +1,4 @@
-<?php if (!defined('PmWiki')) exit();// Time-stamp: <2012-07-04 17:04:37 tamara>
+<?php if (!defined('PmWiki')) exit();// Time-stamp: <2012-09-27 20:20:11 tamara>
 /** savethepage.php
  *
  * Copyright (C) 2012 by Tamara Temple
@@ -31,12 +31,12 @@
 
 $RecipeInfo['SaveThePage']['Version'] = '2012-06-25';
 
-define('STPDIR', dirname(__FILE__).DIRECTORY_SEPARATOR.'savethepage');
+define('STPDIR', dirname(__FILE__).DIRECTORY_SEPARATOR.'savethepage'.DIRECTORY_SEPARATOR);
 
 // Bundle the recipe
-require(STPDIR.DIRECTORY_SEPARATOR.'bundlepages.php');
+require(STPDIR.'bundlepages.php');
 
-include_once("simple_html_dom.php");
+require_once(STPDIR."simple_html_dom.php");
 
 Markup('savethepage','inline','/\\(:savethepage:\\)/e',
        "Keep(STP_CreateBookmarklet(\$pagename))");
@@ -55,7 +55,8 @@ SDV($STP_PageFmt,"
 Summary:\$summary
 Tags:\$tags
 Source:\$stp_url
-(:title \$title:)
+Title: \$title
+(:title {*$:Title}:)
 Saved:\$time
 (:nolinebreaks:)
 
@@ -79,7 +80,7 @@ Saved:\$time
  **/
 function STP_CreateBookmarklet ($pagename)
 {
-  $bookmarklet_code = STP_Compress(file_get_contents(STPDIR.DIRECTORY_SEPARATOR.'bookmarklet.js'));
+  $bookmarklet_code = STP_Compress(file_get_contents(STPDIR.'bookmarklet.js'));
   $bookmarklet="<a href=\"javascript:$bookmarklet_code\" title=\"Save The Page bookmarklet\">Save The Page</a>";
   return FmtPageName("Save the page bookmarklet: $bookmarklet - drag to bookmarks bar!", $pagename);
 } // END function STP_CreateBookmarklet
