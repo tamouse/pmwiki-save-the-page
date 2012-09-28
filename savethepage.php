@@ -1,4 +1,4 @@
-<?php if (!defined('PmWiki')) exit();// Time-stamp: <2012-07-01 00:12:42 tamara>
+<?php if (!defined('PmWiki')) exit();// Time-stamp: <2012-07-04 17:04:37 tamara>
 /** savethepage.php
  *
  * Copyright (C) 2012 by Tamara Temple
@@ -80,9 +80,7 @@ Saved:\$time
 function STP_CreateBookmarklet ($pagename)
 {
   $bookmarklet_code = STP_Compress(file_get_contents(STPDIR.DIRECTORY_SEPARATOR.'bookmarklet.js'));
-  @sms('$bookmarklet_code',$bookmarklet_code,__FILE__,__LINE__,__FUNCTION__);
   $bookmarklet="<a href=\"javascript:$bookmarklet_code\" title=\"Save The Page bookmarklet\">Save The Page</a>";
-  @sms('$bookmarket',$bookmarklet,__FILE__,__LINE__,__FUNCTION__);
   return FmtPageName("Save the page bookmarklet: $bookmarklet - drag to bookmarks bar!", $pagename);
 } // END function STP_CreateBookmarklet
 
@@ -123,7 +121,6 @@ function STP_SaveThePage ($pagename)
   Lock(2);
   // information is supplied in the $_POST variable from the bookmarklet (we hope)
   $stp_url=(isset($_REQUEST['url'])?$_REQUEST['url']:'');
-  @sms('$stp_url=',$stp_url,__FILE__,__LINE__,__FUNCTION__);
   if (empty($stp_url)) {
     Abort("Url not specified: stp_url=$stp_url");
   }
@@ -132,8 +129,6 @@ function STP_SaveThePage ($pagename)
     Abort("Could not retrieve $stp_url");
   }
   
-  @sms("html:",$html,__FILE__,__LINE__,__FUNCTION__);
-
   $base = STP_GetBaseUrl($stp_url);
   if (false === $base) {
     Abort("Could not determine base url from $stp_url");
@@ -157,8 +152,6 @@ function STP_SaveThePage ($pagename)
   $STP_Var['$tags'] = STP_ExtractKeywords($dom);
   $STP_Var['$time'] = date('r');
   $STP_Var['$text'] = $wikitext;
-  @sms('STP_Var',$STP_Var,__FILE__,__LINE__,__FUNCTION__);
-  @sms('STP_PageFmt: ',$STP_PageFmt,__FILE__,__LINE__,__FUNCTION__);
   $text = str_replace(array_keys($STP_Var),array_values($STP_Var),
 			 $STP_PageFmt);
 
@@ -166,7 +159,6 @@ function STP_SaveThePage ($pagename)
     $STP_PagePrefix .
     $text .
     $STP_PageSuffix;
-  @sms('text=',$text,__FILE__,__LINE__,__FUNCTION__);
   $action='edit';
   $_POST['text']=$text;
   
@@ -239,28 +231,23 @@ function STP_ConvertHTML ($html,$baseurl)
 {
   // do nothing if no input
   if (empty($html)) return $html;
-  @sms("Original HTML: ",(substr($html,0,50)),__FILE__,__LINE__,__FUNCTION__);
   
   // verify that html2wiki program exists
   // kludge for running on mac and using fink utilities
   putenv("PATH=/sw/bin:".getenv("PATH"));
   $html2wiki = trim(shell_exec(escapeshellcmd("which html2wiki")));
-  @sms("html2wiki= ",$html2wiki,__FILE__,__LINE__,__FUNCTION__);
   if (empty($html2wiki)) {
     Abort('Could not find program html2wiki');
   }
 
   // run $html through converter
   $tempfile=tempnam(sys_get_temp_dir(), 'STP');
-  @sms("tempfile= ",$tempfile,__FILE__,__LINE__,__FUNCTION__);
   file_put_contents($tempfile,$html);
   if (!file_exists($tempfile)) {
     Abort("$tempfile does not exist!!!");
   }
   $cmd=escapeshellcmd("$html2wiki --dialect=PmWiki --base-uri '$baseurl' $tempfile")." 2>&1";
-  @sms("cmd= ",$cmd,__FILE__,__LINE__,__FUNCTION__);
   $wikitext = shell_exec($cmd);
-  @sms("wikitext= ",$wikitext,__FILE__,__LINE__,__FUNCTION__);
   //unlink($tempfile);
   return $wikitext;
 } // END function STP_ConvertHTML
@@ -285,7 +272,6 @@ function STP_GetBaseUrl ($url)
 		     $url_components['scheme'],
 		     $url_components['host'],
 		     $url_components['port']);
-  @sms("baseurl: ",$baseurl,__FILE__,__LINE__,__FUNCTION__);
   return $baseurl;
 
 } // END function STP_GetBaseUrl
@@ -336,15 +322,9 @@ function STP_ExtractTitle ($dom)
  **/
 function STP_CleanTitle ($title)
 {
-  //  @sms("(before) title=",$title,basename(__FILE__),__LINE__,__FUNCTION__);
   $clean = mb_convert_encoding($title,'ASCII','HTML-ENTITIES');
-  //  @sms("(after mb_convert_encoding) clean=",$clean,basename(__FILE__),__LINE__,__FUNCTION__);
   $clean = preg_replace("/[^[:alnum:] ]+/",'',$clean);
-  //  @sms("(after preg_replace) clean=",$clean,basename(__FILE__),__LINE__,__FUNCTION__);
-    
   $clean = ucwords(strtolower($clean));
-  @sms("(after ucwords) clean=",$clean,__FILE__,__LINE__,__FUNCTION__);
-
   return $clean;
 
 } // END function STP_CleanTitle
