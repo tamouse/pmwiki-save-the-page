@@ -1,4 +1,4 @@
-<?php if (!defined('PmWiki')) exit();// Time-stamp: <2012-09-27 20:20:11 tamara>
+<?php if (!defined('PmWiki')) exit();// Time-stamp: <2012-10-03 09:38:43 tamara>
 /** savethepage.php
  *
  * Copyright (C) 2012 by Tamara Temple
@@ -148,7 +148,7 @@ function STP_SaveThePage ($pagename)
 
   $STP_Var=Array();
   $STP_Var['$stp_url'] = $stp_url;
-  $STP_Var['$title'] = STP_ExtractTitle($dom);
+  $STP_Var['$title'] = trim(STP_ExtractTitle($dom));
   $STP_Var['$summary'] = STP_ExtractDescription($dom);
   $STP_Var['$tags'] = STP_ExtractKeywords($dom);
   $STP_Var['$time'] = date('r');
@@ -232,14 +232,27 @@ function STP_ConvertHTML ($html,$baseurl)
 {
   // do nothing if no input
   if (empty($html)) return $html;
-  
-  // verify that html2wiki program exists
+
   // kludge for running on mac and using fink utilities
   putenv("PATH=/sw/bin:".getenv("PATH"));
+  
+  // verify that the tidy program exists
+  $tidy = trim(shell_exec(escapeshellcmd("which tidy")));
+  if (empty($tidy)) Abort('Could not find tidy program');
+
+  // verify that html2wiki program exists
   $html2wiki = trim(shell_exec(escapeshellcmd("which html2wiki")));
-  if (empty($html2wiki)) {
-    Abort('Could not find program html2wiki');
-  }
+  if (empty($html2wiki)) Abort('Could not find program html2wiki');
+
+  /**
+   * Fix up some known issues
+   *
+   * the allrecipes.com site has a css bug in one of their style
+   * statements: "*width:"
+   *
+   */
+
+  $html = preg_replace("/\*width:.*?;/",'',$html);
 
   // run $html through converter
   $tempfile=tempnam(sys_get_temp_dir(), 'STP');
@@ -247,9 +260,10 @@ function STP_ConvertHTML ($html,$baseurl)
   if (!file_exists($tempfile)) {
     Abort("$tempfile does not exist!!!");
   }
-  $cmd=escapeshellcmd("$html2wiki --dialect=PmWiki --base-uri '$baseurl' $tempfile")." 2>&1";
+
+  $cmd="tidy $tempfile 2>/dev/null | $html2wiki --dialect=PmWiki --base-uri '$baseurl'  2>&1";
   $wikitext = shell_exec($cmd);
-  //unlink($tempfile);
+  unlink($tempfile);
   return $wikitext;
 } // END function STP_ConvertHTML
 
@@ -323,7 +337,7 @@ function STP_ExtractTitle ($dom)
  **/
 function STP_CleanTitle ($title)
 {
-  $clean = mb_convert_encoding($title,'ASCII','HTML-ENTITIES');
+  $clean = mb_convert_encoding(trim($title),'ASCII','HTML-ENTITIES');
   $clean = preg_replace("/[^[:alnum:] ]+/",'',$clean);
   $clean = ucwords(strtolower($clean));
   return $clean;
