@@ -1,5 +1,8 @@
 # Ignore the usual suspects
 *~
+\#*\#
+.\#*
+
 *.bak
 *.zip
 *.gz
