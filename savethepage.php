@@ -1,4 +1,4 @@
-<?php if (!defined('PmWiki')) exit();// Time-stamp: <2012-10-03 09:38:43 tamara>
+<?php if (!defined('PmWiki')) exit("Must be run under PmWiki");// Time-stamp: <2012-10-03 09:38:43 tamara>
 /** savethepage.php
  *
  * Copyright (C) 2012 by Tamara Temple
@@ -29,14 +29,13 @@
  *
  */
 
-$RecipeInfo['SaveThePage']['Version'] = '2012-06-25';
+$RecipeInfo['SaveThePage']['Version'] = '2012-11-23.1b';
 
 define('STPDIR', dirname(__FILE__).DIRECTORY_SEPARATOR.'savethepage'.DIRECTORY_SEPARATOR);
 
 // Bundle the recipe
 require(STPDIR.'bundlepages.php');
 
-require_once(STPDIR."simple_html_dom.php");
 
 Markup('savethepage','inline','/\\(:savethepage:\\)/e',
        "Keep(STP_CreateBookmarklet(\$pagename))");
@@ -80,8 +79,7 @@ Saved:\$time
  **/
 function STP_CreateBookmarklet ($pagename)
 {
-  $bookmarklet_code = STP_Compress(file_get_contents(STPDIR.'bookmarklet.js'));
-  $bookmarklet="<a href=\"javascript:$bookmarklet_code\" title=\"Save The Page bookmarklet\">Save The Page</a>";
+  
   return FmtPageName("Save the page bookmarklet: $bookmarklet - drag to bookmarks bar!", $pagename);
 } // END function STP_CreateBookmarklet
 
@@ -303,10 +301,7 @@ function STP_GetBaseUrl ($url)
 function STP_CreatePageName ($pagename,$title)
 {
   global $STP_NewPageNamePrefix;
-  if (empty($title)) {
-    $title=$STP_NewPageNamePrefix.date("YmdHis");
-  }
-  $newpagename = MakePageName($pagename,$title.date("YmdHis"));
+  $newpagename = MakePageName($pagename,$STP_NewPageNamePrefix.$title.date("YmdHis"));
   return $newpagename;
 } // END function STP_CreatePageName
 
