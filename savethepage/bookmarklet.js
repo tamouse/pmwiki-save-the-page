@@ -3,7 +3,7 @@
     a,
     d=document,
     w=window,
-    f = '\$PageUrl?action=savethepage',
+    f = '$PageUrl?action=savethepage',
     l = d.location,
     en = encodeURIComponent;
 u = f + '&url=' + en(l.href);

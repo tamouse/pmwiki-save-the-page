@@ -1,4 +1,4 @@
-<?php if (!defined('PmWiki')) exit("Must be run under PmWiki");// Time-stamp: <2012-10-03 09:38:43 tamara>
+<?php if (!defined('PmWiki')) exit("Must be run under PmWiki");
 /** savethepage.php
  *
  * Copyright (C) 2012 by Tamara Temple
@@ -69,7 +69,7 @@ Saved:\$time
 (:linkwikiwords:)
 
 ");
-SDV($STP_BookmarkletFmt,'Save The Tage bookmarklet: <a href="javascript:$bookmarklet">Save The Page</a> - drag to bookmarks bar!');
+SDV($STP_BookmarkletFmt,'Save The Page bookmarklet: <a href="javascript:$bookmarklet">Save The Page</a> - drag to bookmarks bar!');
 
 
 if ($action=='savethepage') {
@@ -88,16 +88,19 @@ if ($action=='savethepage') {
  * clicked on, the bookmarklet with commence to save the current
  * web page to the wiki.
  *
- * @returns result of FmtPageName with bookmarklet added
+ * @return result of FmtPageName with bookmarklet added
  * @author Tamara Temple <tamara@tamaratemple.com>
  * @param string $pagename
  **/
 function STP_CreateBookmarklet ($pagename)
 {
+  global $MessagesFmt;
+  $MessagesFmt[]='<p class="wikimsg">Inside '.__FUNCTION__.'</p>';
   global $STP_BookmarkletFmt;
-  $bookmarket = SaveThePage::bookmarklet(STPDIR.'bookmarklet.js', $STP_BookmarkletFmt);
-  return FmtPageName($bookmarklet, $pagename);
-} // END function STP_CreateBookmarklet
+  $bookmarklet = SaveThePage::bookmarklet(STPDIR.'bookmarklet.js', $STP_BookmarkletFmt);
+  $result = FmtPageName($bookmarklet, $pagename);
+  return $result;
+ } // END function STP_CreateBookmarklet
 
 
 
