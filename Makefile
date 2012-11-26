@@ -1,7 +1,7 @@
 # Makefile for managing the SaveThePage PmWiki cookbook recipe
 
 ZIP=/usr/bin/zip
-ZIPOPTIONS="-r"
+ZIPOPTIONS=-ru
 
 all: clean savethepage.zip
 
