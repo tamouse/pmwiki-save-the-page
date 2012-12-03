@@ -90,7 +90,7 @@ class SaveThePage
     {
       $e=mb_detect_encoding($html);
       if (FALSE === $e) {
-        $e = 'ISO-8859-1';
+        $e = 'UTF-8'; // assume UTF-8
       }
       return mb_convert_encoding($html,'HTML-ENTITIES',$e);
     }

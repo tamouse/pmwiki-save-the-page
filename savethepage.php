@@ -128,7 +128,6 @@ function STP_SaveThePage ($pagename)
     Abort("Could not retrieve $stp_url");
   }
   
-  file_put_contents("/tmp/stp_".strftime("%F-%T").".out", $html);
   $base = SaveThePage::getbaseurl($stp_url);
   if (false === $base) {
     Abort("Could not determine base url from $stp_url");
@@ -136,13 +135,32 @@ function STP_SaveThePage ($pagename)
 
   $filterresults = SaveThePage::filter($html,"html2wiki --dialect=PmWiki --base-uri=$base --escape-entities");
   if ($filterresults['return'] != 0) {
-    $MessagesFmt[] = "<p class=\"wikimsg\">Errors from html2wiki:</p><pre>${filterresults['errors']}</pre>";
+    $MessagesFmt[] = "<p class=\"wikimsg\">Errors from html2wiki:</p><pre>".htmlentities($filterresults['errors'])."}</pre>";
   }
+ 
   if (empty($filterresults['output'])) {
     $wikitext = $html;
   } else {
     $wikitext = $filterresults['output'];
   }
+
+  /**
+   * IMPORTANT!!!
+   * 
+   * On my older VPS, running PHP 5.2.13, if this function isn't used, the text that contains UTF-8
+   * characters does not work correctly. I do not know why, and I don't much care to know why.
+   * Eventually, I'm getting rid of the stupid system.
+   * 
+   * Note that this conversion must be run last on the text. html2wiki also does not work correctly
+   * at escaping entities, and somehow converts the entities from convertencoding back to UTF-8
+   * chars instead.
+   * 
+   * This took me *so* long to figure out, as it works correctly with*OUT* needing the convertencoding
+   * call on my dev box running PHP 5.3.2-ubuntu, nor on my Gandi.net server, running Deb 6 and 5.4.7.1-dotdeb
+   * 
+   * -tamouse 2012-12-02
+   */
+  $convertedwikitext = SaveThePage::convertencoding($wikitext);
 
   $dom = new simple_html_dom();
   $dom->load($html);
@@ -153,7 +171,7 @@ function STP_SaveThePage ($pagename)
   $STP_Var['$summary'] = STP_ExtractDescription($dom);
   $STP_Var['$tags'] = STP_ExtractKeywords($dom);
   $STP_Var['$time'] = date('r');
-  $STP_Var['$text'] = $wikitext;
+  $STP_Var['$text'] = $convertedwikitext;
   $text = str_replace(array_keys($STP_Var),array_values($STP_Var),
 			 $STP_PageFmt);
 
