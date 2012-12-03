@@ -53,7 +53,7 @@ $HandleActions['savethepage']='STP_SaveThePage';
 
 SDV($STP_PagePrefix,'');
 SDV($STP_PageSuffix,'');
-SDV($STP_NewPageNamePrefix,'NewSavedPage');
+SDV($STP_NewPageNamePrefix,'');
 SDV($STP_PageFmt,"
 (:linebreaks:)
 Summary:\$summary
@@ -128,25 +128,24 @@ function STP_SaveThePage ($pagename)
     Abort("Could not retrieve $stp_url");
   }
   
+  file_put_contents("/tmp/stp_".strftime("%F-%T").".out", $html);
   $base = SaveThePage::getbaseurl($stp_url);
   if (false === $base) {
     Abort("Could not determine base url from $stp_url");
   }
 
-  $convertedhtml = SaveThePage::convertencoding($html);
-  
-  $filterresults = SaveThePage::filter($convertedhtml,"html2wiki --dialect=PmWiki --base-uri=$base");
+  $filterresults = SaveThePage::filter($html,"html2wiki --dialect=PmWiki --base-uri=$base --escape-entities");
   if ($filterresults['return'] != 0) {
     $MessagesFmt[] = "<p class=\"wikimsg\">Errors from html2wiki:</p><pre>${filterresults['errors']}</pre>";
   }
   if (empty($filterresults['output'])) {
-    $wikitext = $convertedhtml;
+    $wikitext = $html;
   } else {
     $wikitext = $filterresults['output'];
   }
 
   $dom = new simple_html_dom();
-  $dom->load($convertedhtml);
+  $dom->load($html);
 
   $STP_Var=Array();
   $STP_Var['$stp_url'] = $stp_url;
