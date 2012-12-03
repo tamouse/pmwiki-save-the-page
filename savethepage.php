@@ -29,7 +29,7 @@
  *
  */
 
-$RecipeInfo['SaveThePage']['Version'] = '2012-11-23.1b';
+$RecipeInfo['SaveThePage']['Version'] = '2012-12-03';
 
 define('STPDIR', dirname(__FILE__).DIRECTORY_SEPARATOR.'savethepage'.DIRECTORY_SEPARATOR);
 
