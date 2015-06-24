@@ -2,9 +2,9 @@
 
 ## Obtain
 
-Get "Save The Page"" from
-[GitHub](git@github.com:tamouse/pmwiki-save-the-page) or download from
-(the Cookbook)[http://www.pmwiki.org/wiki/Cookbook/SaveThePage].
+Get "Save The Page" from
+[GitHub](https://github.com/tamouse/pmwiki-save-the-page) or download from
+[the Cookbook](http://www.pmwiki.org/wiki/Cookbook/SaveThePage).
 
 ## Abandoned
 
