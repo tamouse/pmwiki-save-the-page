@@ -14,7 +14,6 @@ Configuring and activating SaveThePage are found in the newly created
 Site.SaveThePage wiki page.
 
 
-Author: Tamara Temple <tamara@tamaratemple.com>
+Author: Tamara Temple <tamouse@gmail.com>
 
-Repository: http://gitorious.org/pmwiki-stuff/savethepage
-
+Repository: git@github.com:tamouse/pmwiki-save-the-page
